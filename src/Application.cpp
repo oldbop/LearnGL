@@ -21,15 +21,13 @@ namespace lg {
     }
 
     glfwMakeContextCurrent(m_pWindow);
-    loadGL();
+    utils::loadGL();
 
     return true;
   }
 
   void Application::run() {
 
-    glViewport(0, 0, WIDTH, HEIGHT);
-    
     while(!(glfwWindowShouldClose(m_pWindow))) {
 
       glClear(GL_COLOR_BUFFER_BIT);

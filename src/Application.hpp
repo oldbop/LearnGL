@@ -1,30 +1,30 @@
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef APPLICATION_HPP
+#define APPLICATION_HPP
 
 #ifdef SYS_GL_HEADERS
-  #include <GL/gl.h>
-  #include <GLFW/glfw3.h>
+#include <GL/gl.h>
+#include <GLFW/glfw3.h>
 
-  namespace lg {
-    inline void loadGL() {}
-  }
+namespace utils {
+  inline void loadGL() {}
+}
 #else
-  #include <glad/gl.h>
-  #include <GLFW/glfw3.h>
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
 
-  namespace lg {
-    inline void loadGL() {
-      gladLoadGL(glfwGetProcAddress);
-    }
+namespace utils {
+  inline void loadGL() {
+    gladLoadGL(glfwGetProcAddress);
   }
+}
 #endif
 
 #include <string>
 
 namespace lg {
 
-  const unsigned int WIDTH = 600;
-  const unsigned int HEIGHT = 600;
+  const int WIDTH = 600;
+  const int HEIGHT = 600;
   const float RATIO = WIDTH / (float) HEIGHT;
   const std::string TITLE = "LearnGL";
 
