@@ -2,7 +2,10 @@
 #define APPLICATION_HPP
 
 #ifdef SYS_GL_HEADERS
+#define GL_GLEXT_PROTOTYPES
+
 #include <GL/gl.h>
+#include <GL/glext.h>
 #include <GLFW/glfw3.h>
 
 namespace utils {
