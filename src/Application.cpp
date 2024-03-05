@@ -1,5 +1,25 @@
 #include "Application.hpp"
+#include <GLFW/glfw3.h>
 #include <iostream>
+
+#ifdef SYS_GL_HEADERS
+#define GL_GLEXT_PROTOTYPES
+
+#include <GL/gl.h>
+#include <GL/glext.h>
+
+namespace utils {
+  inline void loadGL() {}
+}
+#else
+#include <glad/gl.h>
+
+namespace utils {
+  inline void loadGL() {
+    gladLoadGL(glfwGetProcAddress);
+  }
+}
+#endif
 
 namespace lg {
 

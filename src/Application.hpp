@@ -1,27 +1,9 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#ifdef SYS_GL_HEADERS
-#define GL_GLEXT_PROTOTYPES
+#define GLFW_INCLUDE_NONE
 
-#include <GL/gl.h>
-#include <GL/glext.h>
 #include <GLFW/glfw3.h>
-
-namespace utils {
-  inline void loadGL() {}
-}
-#else
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
-
-namespace utils {
-  inline void loadGL() {
-    gladLoadGL(glfwGetProcAddress);
-  }
-}
-#endif
-
 #include <string>
 
 namespace lg {
