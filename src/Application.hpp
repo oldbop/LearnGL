@@ -36,6 +36,8 @@ namespace lg {
     bool init();
     void run();
   private:
+    static unsigned int createShader(const std::string& vSh, const std::string& fSh);
+    static unsigned int compileShader(unsigned int type, const std::string& source);
     GLFWwindow *m_pWindow;
   };
 }
