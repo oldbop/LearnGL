@@ -1,6 +1,9 @@
 #include "Application.hpp"
 #include <GLFW/glfw3.h>
+#include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #ifdef SYS_GL_HEADERS
 #define GL_GLEXT_PROTOTYPES
@@ -55,7 +58,7 @@ namespace lg {
     };
 
     unsigned int buffer;
-    
+
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
@@ -63,32 +66,16 @@ namespace lg {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-    std::string vertexShader =
-      "#version 330 core\n"
-      "\n"
-      "layout(location = 0) in vec4 position;\n"
-      "\n"
-      "void main() {\n"
-      "  gl_Position = position;\n"
-      "}\n";
+    ShaderSource source = parseShader("../res/shaders/basic.shader");
+    unsigned int shader = createShader(source.VertexSource, source.FragmentSource);
 
-    std::string fragmentShader =
-      "#version 330 core\n"
-      "\n"
-      "layout(location = 0) out vec4 color;\n"
-      "\n"
-      "void main() {\n"
-      "  color = vec4(0.6, 0.0, 0.4, 1.0);\n"
-      "}\n";
-
-    unsigned int shader = createShader(vertexShader, fragmentShader);
     glUseProgram(shader);
 
     while(!(glfwWindowShouldClose(m_pWindow))) {
 
       glClear(GL_COLOR_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 3);
-      
+
       glfwSwapBuffers(m_pWindow);
       glfwPollEvents();
     }
@@ -98,6 +85,35 @@ namespace lg {
     glfwDestroyWindow(m_pWindow);
     glfwTerminate();
     return;
+  }
+
+  ShaderSource Application::parseShader(const std::string& path) {
+
+    enum ShaderType {
+      NONE = -1, VERTEX = 0, FRAGMENT = 1
+    };
+
+    std::ifstream stream(path);
+    std::string line;
+    std::stringstream ss[2];
+    ShaderType type = ShaderType::NONE;
+
+    while(std::getline(stream, line)) {
+
+      if(line.find("#shader") != std::string::npos) {
+
+        if(line.find("vertex") != std::string::npos) {
+          type = ShaderType::VERTEX;
+        } else if(line.find("fragment") != std::string::npos) {
+          type = ShaderType::FRAGMENT;
+        }
+
+      } else {
+        ss[(int) type] << line << '\n';
+      }
+    }
+
+    return { ss[0].str(), ss[1].str() };
   }
 
   unsigned int Application::compileShader(unsigned int type, const std::string& source) {
@@ -112,17 +128,17 @@ namespace lg {
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
 
     if(result == GL_FALSE) {
-      
+
       int length;
       glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-      
+
       char *msg = new char[length];
 
       glGetShaderInfoLog(id, length, &length, msg);
       std::cout << msg << std::endl;
 
       glDeleteShader(id);
-      
+
       delete[] msg;
       return 0;
     }

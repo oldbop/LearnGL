@@ -13,6 +13,13 @@ namespace lg {
   const float RATIO = WIDTH / (float) HEIGHT;
   const std::string TITLE = "LearnGL";
 
+  typedef struct {
+
+    std::string VertexSource;
+    std::string FragmentSource;
+
+  } ShaderSource;
+  
   class Application {
   public:
     bool init();
@@ -20,6 +27,7 @@ namespace lg {
   private:
     static unsigned int createShader(const std::string& vSh, const std::string& fSh);
     static unsigned int compileShader(unsigned int type, const std::string& source);
+    static ShaderSource parseShader(const std::string& path);
     GLFWwindow *m_pWindow;
   };
 }
