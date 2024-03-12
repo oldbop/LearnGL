@@ -129,30 +129,46 @@ int main(int argc, const char **argv) {
   glfwMakeContextCurrent(win);
   loadGL();
 
-  float positions[6] = {
-    -0.5f,  0.5f,
+  float positions[] = {
     -0.5f, -0.5f,
-     0.5f, -0.5f
+     0.5f, -0.5f,
+     0.5f,  0.5f,
+    -0.5f,  0.5f
+  };
+
+  unsigned int indices[] = {
+    0, 1, 2,
+    2, 3, 0
   };
 
   unsigned int buffer;
-
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+
+  glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float),
+               positions, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
+  unsigned int ibo;
+  glGenBuffers(1, &ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
+               indices, GL_STATIC_DRAW);
+
   ShaderSource source = parse_shader("../res/shaders/basic.shader");
-  unsigned int program = create_program(source.VertexSource, source.FragmentSource);
+
+  unsigned int program = create_program(source.VertexSource,
+                                        source.FragmentSource);
 
   glUseProgram(program);
 
   while(!(glfwWindowShouldClose(win))) {
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
     glfwSwapBuffers(win);
     glfwPollEvents();
