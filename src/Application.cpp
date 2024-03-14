@@ -1,10 +1,11 @@
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 #ifdef SYS_GL_HEADERS
 #define GL_GLEXT_PROTOTYPES
@@ -21,17 +22,29 @@ inline void loadGL() {
 }
 #endif
 
-const int WIDTH = 600;
+#define GL_CALL(x) gl_clear_error(); x; assert(gl_log_call())
+
+const int WIDTH = 800;
 const int HEIGHT = 600;
 const float RATIO = WIDTH / (float) HEIGHT;
 const std::string TITLE = "LearnGL";
 
 typedef struct {
-
   std::string VertexSource;
   std::string FragmentSource;
-
 } ShaderSource;
+
+void gl_clear_error(void) { while(glGetError()); }
+
+bool gl_log_call(void) {
+  
+  while(GLenum err = glGetError()) {
+    std::cout << "GL Error: " << err << std::endl;
+    return false;
+  }
+
+  return true;
+}
 
 ShaderSource parse_shader(const std::string& path) {
 
@@ -68,7 +81,7 @@ unsigned int compile_shader(unsigned int type, const std::string& source) {
   const char *src = source.c_str();
   int result;
 
-  glShaderSource(id, 1, &src, NULL);
+  glShaderSource(id, 1, &src, nullptr);
   glCompileShader(id);
 
   glGetShaderiv(id, GL_COMPILE_STATUS, &result);
@@ -118,7 +131,7 @@ int main(int argc, const char **argv) {
   }
 
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-  GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(), NULL, NULL);
+  GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(), nullptr, nullptr);
 
   if(!(win)) {
     std::cout << "GLFW: failed to create window" << std::endl;
@@ -127,13 +140,15 @@ int main(int argc, const char **argv) {
   }
 
   glfwMakeContextCurrent(win);
+  glfwSwapInterval(1);
+  
   loadGL();
 
   float positions[] = {
-    -0.5f, -0.5f,
-     0.5f, -0.5f,
-     0.5f,  0.5f,
-    -0.5f,  0.5f
+    -0.9f, -0.9f,
+     0.9f, -0.9f,
+     0.9f,  0.9f,
+    -0.9f,  0.9f
   };
 
   unsigned int indices[] = {
@@ -165,10 +180,25 @@ int main(int argc, const char **argv) {
 
   glUseProgram(program);
 
+  int location = glGetUniformLocation(program, "u_Color");
+
+  float r = 0.0f;
+  float inc = 0.05f;
+
   while(!(glfwWindowShouldClose(win))) {
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+
+    glUniform4f(location, r, 0.0f, 0.0f, 1.0f);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    if(r > 1.0f) {
+      inc = -0.05f;
+    } else if(r < 0.0f) {
+      inc = 0.05f;
+    }
+
+    r += inc;
 
     glfwSwapBuffers(win);
     glfwPollEvents();
