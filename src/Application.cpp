@@ -130,8 +130,14 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-  GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(), nullptr, nullptr);
+
+  GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(),
+                                     nullptr, nullptr);
 
   if(!(win)) {
     std::cout << "GLFW: failed to create window" << std::endl;
@@ -155,6 +161,11 @@ int main(int argc, const char **argv) {
     0, 1, 2,
     2, 3, 0
   };
+
+  // look into this (try unbinding everything then just bind this vao)
+  unsigned int vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 
   unsigned int buffer;
   glGenBuffers(1, &buffer);
