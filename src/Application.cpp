@@ -37,7 +37,7 @@ typedef struct {
 void gl_clear_error(void) { while(glGetError()); }
 
 bool gl_log_call(void) {
-  
+
   while(GLenum err = glGetError()) {
     std::cout << "GL Error: " << err << std::endl;
     return false;
@@ -147,7 +147,7 @@ int main(int argc, const char **argv) {
 
   glfwMakeContextCurrent(win);
   glfwSwapInterval(1);
-  
+
   loadGL();
 
   float positions[] = {
@@ -162,7 +162,8 @@ int main(int argc, const char **argv) {
     2, 3, 0
   };
 
-  // look into this (try unbinding everything then just bind this vao)
+  // the Vertex Array Object stores all of the information related to the buffers
+  // bound and configured after it
   unsigned int vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -193,6 +194,11 @@ int main(int argc, const char **argv) {
 
   int location = glGetUniformLocation(program, "u_Color");
 
+  glBindVertexArray(0);
+  glUseProgram(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
   float r = 0.0f;
   float inc = 0.05f;
 
@@ -200,7 +206,10 @@ int main(int argc, const char **argv) {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glUseProgram(program);
     glUniform4f(location, r, 0.0f, 0.0f, 1.0f);
+    glBindVertexArray(vao);
+
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
     if(r > 1.0f) {
