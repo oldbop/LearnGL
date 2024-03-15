@@ -1,4 +1,6 @@
-#include <cassert>
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -22,8 +24,6 @@ inline void loadGL() {
 }
 #endif
 
-#define GL_CALL(x) gl_clear_error(); x; assert(gl_log_call())
-
 const int WIDTH = 800;
 const int HEIGHT = 600;
 const float RATIO = WIDTH / (float) HEIGHT;
@@ -33,18 +33,6 @@ typedef struct {
   std::string VertexSource;
   std::string FragmentSource;
 } ShaderSource;
-
-void gl_clear_error(void) { while(glGetError()); }
-
-bool gl_log_call(void) {
-
-  while(GLenum err = glGetError()) {
-    std::cout << "GL Error: " << err << std::endl;
-    return false;
-  }
-
-  return true;
-}
 
 ShaderSource parse_shader(const std::string& path) {
 
@@ -168,25 +156,15 @@ int main(int argc, const char **argv) {
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  unsigned int buffer;
-  glGenBuffers(1, &buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-  glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float),
-               positions, GL_STATIC_DRAW);
+  VertexBuffer *vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-  unsigned int ibo;
-  glGenBuffers(1, &ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
-               indices, GL_STATIC_DRAW);
+  IndexBuffer *ib = new IndexBuffer(indices, 6);
 
   ShaderSource source = parse_shader("../res/shaders/basic.shader");
-
+  
   unsigned int program = create_program(source.VertexSource,
                                         source.FragmentSource);
 
@@ -225,6 +203,9 @@ int main(int argc, const char **argv) {
   }
 
   glDeleteProgram(program);
+
+  delete vb;
+  delete ib;
 
   glfwDestroyWindow(win);
   glfwTerminate();
