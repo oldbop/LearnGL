@@ -204,8 +204,8 @@ int main(int argc, const char **argv) {
 
   glDeleteProgram(program);
 
-  delete vb;
   delete ib;
+  delete vb;
 
   glfwDestroyWindow(win);
   glfwTerminate();
