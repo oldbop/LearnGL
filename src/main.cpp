@@ -1,6 +1,3 @@
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
-
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -90,6 +87,16 @@ unsigned int create_program(const std::string& vSh, const std::string& fSh) {
   return program;
 }
 
+void frame_callback(GLFWwindow *win, int width, int height) {
+  glViewport(0, 0, width, height);
+}
+
+void process_input(GLFWwindow *win) {
+  if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(win, true);
+  }
+}
+
 int main(int argc, const char **argv) {
 
   if(!(glfwInit())) {
@@ -101,10 +108,8 @@ int main(int argc, const char **argv) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
   GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(),
-                                     nullptr, nullptr);
+    nullptr, nullptr);
 
   if(!(win)) {
     std::cout << "GLFW: failed to create window" << std::endl;
@@ -117,76 +122,87 @@ int main(int argc, const char **argv) {
 
   loadGL();
 
-  float positions[] = {
-    -0.9f, -0.9f,
-     0.9f, -0.9f,
-     0.9f,  0.9f,
-    -0.9f,  0.9f
+  glViewport(0, 0, WIDTH, HEIGHT);
+  glfwSetFramebufferSizeCallback(win, frame_callback);
+
+  // Vertex data is defined here
+  float vertices[] = {
+    -0.95f, -0.95f, 0.0f,
+     0.95f, -0.95f, 0.0f,
+    -0.95f,  0.95f, 0.0f,
+     0.95f,  0.95f, 0.0f
   };
 
+  // This data is used by the Element Buffer Object. It specifies how to draw
+  // a square using two triangles while reusing some vertices.
   unsigned int indices[] = {
     0, 1, 2,
-    2, 3, 0
+    1, 2, 3
   };
 
-  // the Vertex Array Object stores all of the information related to the
-  // buffers bound and configured after it
+  // A Vertex Array Object is created and bound. All of the VBO's and EBO's
+  // that are bound after this are associated with this object.
   unsigned int vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  auto vb = std::make_unique<VertexBuffer>(positions, 4 * 2 * sizeof(float));
+  // A Vertex Buffer Object is created on the GPU, then our vertex 
+  // data is sent to it
+  unsigned int vbo;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  // A Element Buffer Object is created on the GPU to contain the indices of
+  // the vertices used to draw a shape.
+  unsigned int ebo;
+  glGenBuffers(1, &ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+    GL_STATIC_DRAW);
+
+  // Setting vertex attributes
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0); 
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-  auto ib = std::make_unique<IndexBuffer>(indices, 6);
+  // Parsing and compiling the vertex shader
+  std::string vert_str = parse_shader("../res/shaders/triangle.vert");
+  unsigned int vert_sha = compile_shader(GL_VERTEX_SHADER, vert_str);
 
-  std::string vert = parse_shader("../res/shaders/basic.vert");
-  std::string frag = parse_shader("../res/shaders/basic.frag");
+  // Parsing and compiling the fragment shader
+  std::string frag_str = parse_shader("../res/shaders/triangle.frag");
+  unsigned int frag_sha = compile_shader(GL_FRAGMENT_SHADER, frag_str);
+
+  // Creating, linking, and using the shader program
+  unsigned int shader_prog = glCreateProgram();
   
-  unsigned int program = create_program(vert, frag);
+  glAttachShader(shader_prog, vert_sha);
+  glAttachShader(shader_prog, frag_sha);
+  
+  glLinkProgram(shader_prog);
+  glValidateProgram(shader_prog);
 
-  glUseProgram(program);
+  glDeleteShader(vert_sha);
+  glDeleteShader(frag_sha);
 
-  int location = glGetUniformLocation(program, "u_Color");
+  glUseProgram(shader_prog);
 
-  glBindVertexArray(0);
-  glUseProgram(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  float r = 0.0f;
-  float inc = 0.05f;
+  // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while(!(glfwWindowShouldClose(win))) {
 
+    process_input(win);
+
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(program);
-    glUniform4f(location, r, 0.0f, 0.0f, 1.0f);
-    glBindVertexArray(vao);
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-    if(r > 1.0f) {
-      inc = -0.05f;
-    } else if(r < 0.0f) {
-      inc = 0.05f;
-    }
-
-    r += inc;
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(win);
     glfwPollEvents();
   }
 
-  glDeleteProgram(program);
-
-  ib.reset();
-  vb.reset();
-
-  glfwDestroyWindow(win);
   glfwTerminate();
   return 0;
 }
