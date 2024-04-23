@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -29,38 +30,17 @@ const int HEIGHT = 600;
 const float RATIO = WIDTH / (float) HEIGHT;
 const std::string TITLE = "LearnGL";
 
-typedef struct {
-  std::string VertexSource;
-  std::string FragmentSource;
-} ShaderSource;
-
-ShaderSource parse_shader(const std::string& path) {
-
-  enum ShaderType {
-    NONE = -1, VERTEX = 0, FRAGMENT = 1
-  };
+std::string parse_shader(const std::string& path) {
 
   std::ifstream stream(path);
   std::string line;
-  std::stringstream ss[2];
-  ShaderType type = ShaderType::NONE;
+  std::stringstream sstream;
 
   while(std::getline(stream, line)) {
-
-    if(line.find("#shader") != std::string::npos) {
-
-      if(line.find("vertex") != std::string::npos) {
-        type = ShaderType::VERTEX;
-      } else if(line.find("fragment") != std::string::npos) {
-        type = ShaderType::FRAGMENT;
-      }
-
-    } else {
-      ss[(int) type] << line << '\n';
-    }
+    sstream << line << '\n';
   }
 
-  return { ss[0].str(), ss[1].str() };
+  return sstream.str();
 }
 
 unsigned int compile_shader(unsigned int type, const std::string& source) {
@@ -79,14 +59,13 @@ unsigned int compile_shader(unsigned int type, const std::string& source) {
     int length;
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
-    char *msg = new char[length];
+    std::unique_ptr<char[]> msg(new char[length]);
 
-    glGetShaderInfoLog(id, length, &length, msg);
-    std::cout << msg << std::endl;
+    glGetShaderInfoLog(id, length, &length, msg.get());
+    std::cout << msg.get() << std::endl;
 
     glDeleteShader(id);
 
-    delete[] msg;
     return 0;
   }
 
@@ -150,23 +129,23 @@ int main(int argc, const char **argv) {
     2, 3, 0
   };
 
-  // the Vertex Array Object stores all of the information related to the buffers
-  // bound and configured after it
+  // the Vertex Array Object stores all of the information related to the
+  // buffers bound and configured after it
   unsigned int vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  VertexBuffer *vb = new VertexBuffer(positions, 4 * 2 * sizeof(float));
+  auto vb = std::make_unique<VertexBuffer>(positions, 4 * 2 * sizeof(float));
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-  IndexBuffer *ib = new IndexBuffer(indices, 6);
+  auto ib = std::make_unique<IndexBuffer>(indices, 6);
 
-  ShaderSource source = parse_shader("../res/shaders/basic.shader");
+  std::string vert = parse_shader("../res/shaders/basic.vert");
+  std::string frag = parse_shader("../res/shaders/basic.frag");
   
-  unsigned int program = create_program(source.VertexSource,
-                                        source.FragmentSource);
+  unsigned int program = create_program(vert, frag);
 
   glUseProgram(program);
 
@@ -204,8 +183,8 @@ int main(int argc, const char **argv) {
 
   glDeleteProgram(program);
 
-  delete ib;
-  delete vb;
+  ib.reset();
+  vb.reset();
 
   glfwDestroyWindow(win);
   glfwTerminate();
