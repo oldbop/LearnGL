@@ -1,6 +1,6 @@
+#include <cmath>
 #include <fstream>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <string>
 
@@ -22,7 +22,7 @@ inline void loadGL() {
 }
 #endif
 
-const int WIDTH = 800;
+const int WIDTH = 600;
 const int HEIGHT = 600;
 const float RATIO = WIDTH / (float) HEIGHT;
 const std::string TITLE = "LearnGL";
@@ -44,6 +44,7 @@ unsigned int compile_shader(unsigned int type, const std::string& source) {
 
   unsigned int id = glCreateShader(type);
   const char *src = source.c_str();
+  char msg[512];
   int result;
 
   glShaderSource(id, 1, &src, nullptr);
@@ -53,13 +54,8 @@ unsigned int compile_shader(unsigned int type, const std::string& source) {
 
   if(result == GL_FALSE) {
 
-    int length;
-    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-
-    std::unique_ptr<char[]> msg(new char[length]);
-
-    glGetShaderInfoLog(id, length, &length, msg.get());
-    std::cout << msg.get() << std::endl;
+    glGetShaderInfoLog(id, 512, NULL, msg);
+    std::cout << msg << std::endl;
 
     glDeleteShader(id);
 
@@ -67,24 +63,6 @@ unsigned int compile_shader(unsigned int type, const std::string& source) {
   }
 
   return id;
-}
-
-unsigned int create_program(const std::string& vSh, const std::string& fSh) {
-
-  unsigned int program = glCreateProgram();
-  unsigned int vs = compile_shader(GL_VERTEX_SHADER, vSh);
-  unsigned int fs = compile_shader(GL_FRAGMENT_SHADER, fSh);
-
-  glAttachShader(program, vs);
-  glAttachShader(program, fs);
-
-  glLinkProgram(program);
-  glValidateProgram(program);
-
-  glDeleteShader(vs);
-  glDeleteShader(fs);
-
-  return program;
 }
 
 void frame_callback(GLFWwindow *win, int width, int height) {
@@ -187,8 +165,11 @@ int main(int argc, const char **argv) {
 
   glUseProgram(shader_prog);
 
+  float time_val, green_val;
+  int color_uniform_loc = glGetUniformLocation(shader_prog, "cpu_color");
+
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while(!(glfwWindowShouldClose(win))) {
 
@@ -196,6 +177,11 @@ int main(int argc, const char **argv) {
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    time_val = glfwGetTime();
+    green_val = (sin(time_val) / 2.0f) + 0.5f;
+
+    glUniform4f(color_uniform_loc, 0.0f, green_val, 0.0f, 1.0f);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
