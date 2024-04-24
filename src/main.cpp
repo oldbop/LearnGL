@@ -54,7 +54,7 @@ unsigned int compile_shader(unsigned int type, const std::string& source) {
 
   if(result == GL_FALSE) {
 
-    glGetShaderInfoLog(id, 512, NULL, msg);
+    glGetShaderInfoLog(id, 512, nullptr, msg);
     std::cout << msg << std::endl;
 
     glDeleteShader(id);
