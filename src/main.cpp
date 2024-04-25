@@ -1,4 +1,3 @@
-#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -103,19 +102,10 @@ int main(int argc, const char **argv) {
   glViewport(0, 0, WIDTH, HEIGHT);
   glfwSetFramebufferSizeCallback(win, frame_callback);
 
-  // Vertex data is defined here
   float vertices[] = {
-    -0.95f, -0.95f, 0.0f,
-     0.95f, -0.95f, 0.0f,
-    -0.95f,  0.95f, 0.0f,
-     0.95f,  0.95f, 0.0f
-  };
-
-  // This data is used by the Element Buffer Object. It specifies how to draw
-  // a square using two triangles while reusing some vertices.
-  unsigned int indices[] = {
-    0, 1, 2,
-    1, 2, 3
+    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+     0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
   };
 
   // A Vertex Array Object is created and bound. All of the VBO's and EBO's
@@ -131,17 +121,17 @@ int main(int argc, const char **argv) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  // A Element Buffer Object is created on the GPU to contain the indices of
-  // the vertices used to draw a shape.
-  unsigned int ebo;
-  glGenBuffers(1, &ebo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-    GL_STATIC_DRAW);
-
-  // Setting vertex attributes
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0); 
+  // Setting and enabling the position vertex attribute.
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    (void *) 0);
+  
   glEnableVertexAttribArray(0);
+
+  // Setting and enabling the color vertex attribute.
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    (void *) (3 * sizeof(float)));
+
+  glEnableVertexAttribArray(1);
 
   // Parsing and compiling the vertex shader
   std::string vert_str = parse_shader("../res/shaders/triangle.vert");
@@ -165,9 +155,6 @@ int main(int argc, const char **argv) {
 
   glUseProgram(shader_prog);
 
-  float time_val, green_val;
-  int color_uniform_loc = glGetUniformLocation(shader_prog, "cpu_color");
-
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -178,12 +165,7 @@ int main(int argc, const char **argv) {
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    time_val = glfwGetTime();
-    green_val = (sin(time_val) / 2.0f) + 0.5f;
-
-    glUniform4f(color_uniform_loc, 0.0f, green_val, 0.0f, 1.0f);
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(win);
     glfwPollEvents();

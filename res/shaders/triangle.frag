@@ -1,8 +1,8 @@
 #version 330 core
 
-out vec4 color;
-uniform vec4 cpu_color;
+out vec4 rCol;
+in vec3 fCol;
 
 void main() {
-  color = cpu_color;
+  rCol = vec4(fCol, 1.0);
 }
