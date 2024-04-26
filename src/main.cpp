@@ -1,6 +1,6 @@
-#include <fstream>
+#include "ShaderProgram.hpp"
+
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #define GLFW_INCLUDE_NONE
@@ -25,44 +25,6 @@ const int WIDTH = 600;
 const int HEIGHT = 600;
 const float RATIO = WIDTH / (float) HEIGHT;
 const std::string TITLE = "LearnGL";
-
-std::string parse_shader(const std::string& path) {
-
-  std::ifstream stream(path);
-  std::string line;
-  std::stringstream sstream;
-
-  while(std::getline(stream, line)) {
-    sstream << line << '\n';
-  }
-
-  return sstream.str();
-}
-
-unsigned int compile_shader(unsigned int type, const std::string& source) {
-
-  unsigned int id = glCreateShader(type);
-  const char *src = source.c_str();
-  char msg[512];
-  int result;
-
-  glShaderSource(id, 1, &src, nullptr);
-  glCompileShader(id);
-
-  glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-
-  if(result == GL_FALSE) {
-
-    glGetShaderInfoLog(id, 512, nullptr, msg);
-    std::cout << msg << std::endl;
-
-    glDeleteShader(id);
-
-    return 0;
-  }
-
-  return id;
-}
 
 void frame_callback(GLFWwindow *win, int width, int height) {
   glViewport(0, 0, width, height);
@@ -133,27 +95,12 @@ int main(int argc, const char **argv) {
 
   glEnableVertexAttribArray(1);
 
-  // Parsing and compiling the vertex shader
-  std::string vert_str = parse_shader("../res/shaders/triangle.vert");
-  unsigned int vert_sha = compile_shader(GL_VERTEX_SHADER, vert_str);
-
-  // Parsing and compiling the fragment shader
-  std::string frag_str = parse_shader("../res/shaders/triangle.frag");
-  unsigned int frag_sha = compile_shader(GL_FRAGMENT_SHADER, frag_str);
-
-  // Creating, linking, and using the shader program
-  unsigned int shader_prog = glCreateProgram();
+  ShaderProgram sh1;
   
-  glAttachShader(shader_prog, vert_sha);
-  glAttachShader(shader_prog, frag_sha);
-  
-  glLinkProgram(shader_prog);
-  glValidateProgram(shader_prog);
-
-  glDeleteShader(vert_sha);
-  glDeleteShader(frag_sha);
-
-  glUseProgram(shader_prog);
+  sh1.CompileShader(GL_VERTEX_SHADER, "../res/shaders/triangle.vert");
+  sh1.CompileShader(GL_FRAGMENT_SHADER, "../res/shaders/triangle.frag");
+  sh1.CreateProgram();
+  sh1.Use();
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
