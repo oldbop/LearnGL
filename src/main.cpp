@@ -1,6 +1,7 @@
 #include "ShaderProgram.hpp"
 
 #include <iostream>
+#include <stb/stb_image.h>
 #include <string>
 
 #define GLFW_INCLUDE_NONE
@@ -64,10 +65,25 @@ int main(int argc, const char **argv) {
   glViewport(0, 0, WIDTH, HEIGHT);
   glfwSetFramebufferSizeCallback(win, frame_callback);
 
+  // Image (texture) data
+  int brickW, brickH, brickChs;
+
+  unsigned char *brickData = stbi_load("../res/textures/brick16.png", &brickW,
+    &brickH, &brickChs, 0);
+
+  // Vertex data
   float vertices[] = {
-    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-     0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+    -0.95f, -0.95f, 0.0f, 1.0f, 0.0f, 0.0f,
+     0.95f, -0.95f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -0.95f,  0.95f, 0.0f, 0.0f, 0.0f, 1.0f,
+     0.95f,  0.95f, 0.0f, 1.0f, 1.0f, 0.0f
+  };
+
+  // This data is used by the Element Buffer Object. It specifies how to draw
+  // a square using two triangles while reusing some vertices.
+  unsigned int indices[] = {
+    0, 1, 2,
+    1, 2, 3
   };
 
   // A Vertex Array Object is created and bound. All of the VBO's and EBO's
@@ -83,6 +99,14 @@ int main(int argc, const char **argv) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+  // A Element Buffer Object is created on the GPU to contain the indices of
+  // the vertices used to draw a shape.
+  unsigned int ebo;
+  glGenBuffers(1, &ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+    GL_STATIC_DRAW);
+
   // Setting and enabling the position vertex attribute.
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
     (void *) 0);
@@ -95,6 +119,26 @@ int main(int argc, const char **argv) {
 
   glEnableVertexAttribArray(1);
 
+  // A texture is created on the GPU using an image loaded via stb.
+  unsigned int brickT;
+  glGenTextures(1, &brickT);
+  glBindTexture(GL_TEXTURE_2D, brickT);
+
+  if(brickData) {
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, brickW, brickH, 0, GL_RGB,
+      GL_UNSIGNED_BYTE, brickData);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+  
+  } else {
+    std::cout << "Failed to load texture" << std::endl;
+  }
+
+  stbi_image_free(brickData);
+
+  // The ShaderPorgram class is instantiated, shaders are compiled, and 
+  // the program is created and used.
   ShaderProgram sh1;
   
   sh1.CompileShader(GL_VERTEX_SHADER, "../res/shaders/triangle.vert");
@@ -112,7 +156,7 @@ int main(int argc, const char **argv) {
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(win);
     glfwPollEvents();
