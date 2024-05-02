@@ -1,8 +1,12 @@
 #version 330 core
 
+in vec3 Col;
+in vec2 TexCoord;
+
 out vec4 rCol;
-in vec3 fCol;
+
+uniform sampler2D brickT;
 
 void main() {
-  rCol = vec4(fCol, 1.0);
+  rCol = texture(brickT, TexCoord);
 }

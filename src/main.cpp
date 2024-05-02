@@ -1,8 +1,9 @@
 #include "ShaderProgram.hpp"
 
 #include <iostream>
-#include <stb/stb_image.h>
 #include <string>
+
+#include <stb/stb_image.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -68,15 +69,18 @@ int main(int argc, const char **argv) {
   // Image (texture) data
   int brickW, brickH, brickChs;
 
+  stbi_set_flip_vertically_on_load(true);
+
   unsigned char *brickData = stbi_load("../res/textures/brick16.png", &brickW,
     &brickH, &brickChs, 0);
 
   // Vertex data
   float vertices[] = {
-    -0.95f, -0.95f, 0.0f, 1.0f, 0.0f, 0.0f,
-     0.95f, -0.95f, 0.0f, 0.0f, 1.0f, 0.0f,
-    -0.95f,  0.95f, 0.0f, 0.0f, 0.0f, 1.0f,
-     0.95f,  0.95f, 0.0f, 1.0f, 1.0f, 0.0f
+    // Positions            // Colours          // Texture Coords
+    -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
+    -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
+     0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f
   };
 
   // This data is used by the Element Buffer Object. It specifies how to draw
@@ -108,29 +112,45 @@ int main(int argc, const char **argv) {
     GL_STATIC_DRAW);
 
   // Setting and enabling the position vertex attribute.
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
     (void *) 0);
   
   glEnableVertexAttribArray(0);
 
   // Setting and enabling the color vertex attribute.
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
     (void *) (3 * sizeof(float)));
 
   glEnableVertexAttribArray(1);
 
+  // Setting and enabling the texture coordinate vertex attribute.
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+    (void *) (6 * sizeof(float)));
+
+  glEnableVertexAttribArray(2);
+
   // A texture is created on the GPU using an image loaded via stb.
   unsigned int brickT;
   glGenTextures(1, &brickT);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, brickT);
 
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  
   if(brickData) {
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, brickW, brickH, 0, GL_RGB,
       GL_UNSIGNED_BYTE, brickData);
 
     glGenerateMipmap(GL_TEXTURE_2D);
-  
+
+    std::cout << brickW << "x" << brickH << std::endl;
+
   } else {
     std::cout << "Failed to load texture" << std::endl;
   }
