@@ -66,20 +66,14 @@ int main(int argc, const char **argv) {
   glViewport(0, 0, WIDTH, HEIGHT);
   glfwSetFramebufferSizeCallback(win, frame_callback);
 
-  // Image (texture) data
-  int brickW, brickH, brickChs;
-
   stbi_set_flip_vertically_on_load(true);
-
-  unsigned char *brickData = stbi_load("../res/textures/brick16.png", &brickW,
-    &brickH, &brickChs, 0);
 
   // Vertex data
   float vertices[] = {
-    // Positions            // Colours          // Texture Coords
+    // Positions          // Colours          // Texture Coords
     -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
-    -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
+    -0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
+     0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
      0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f
   };
 
@@ -129,19 +123,20 @@ int main(int argc, const char **argv) {
 
   glEnableVertexAttribArray(2);
 
-  // A texture is created on the GPU using an image loaded via stb.
+  // Brick texture
   unsigned int brickT;
   glGenTextures(1, &brickT);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, brickT);
-
   
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  
+
+  int brickW, brickH, brickChs;
+
+  unsigned char *brickData = stbi_load("../res/textures/brick16.png", &brickW,
+    &brickH, &brickChs, 0);
+
   if(brickData) {
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, brickW, brickH, 0, GL_RGB,
@@ -149,13 +144,38 @@ int main(int argc, const char **argv) {
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    std::cout << brickW << "x" << brickH << std::endl;
-
   } else {
     std::cout << "Failed to load texture" << std::endl;
   }
 
   stbi_image_free(brickData);
+
+  // Plate texture
+  unsigned int plateT;
+  glGenTextures(1, &plateT);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, plateT);
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  int plateW, plateH, plateChs;
+
+  unsigned char *plateData = stbi_load("../res/textures/plate16.png", &plateW,
+    &plateH, &plateChs, 0);
+
+  if(plateData) {
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, plateW, plateH, 0, GL_RGB,
+      GL_UNSIGNED_BYTE, plateData);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+  } else {
+    std::cout << "Failed to load texture" << std::endl;
+  }
+
+  stbi_image_free(plateData);
 
   // The ShaderPorgram class is instantiated, shaders are compiled, and 
   // the program is created and used.
@@ -165,6 +185,9 @@ int main(int argc, const char **argv) {
   sh1.CompileShader(GL_FRAGMENT_SHADER, "../res/shaders/triangle.frag");
   sh1.CreateProgram();
   sh1.Use();
+
+  sh1.SetInt("brickT", 0);
+  sh1.SetInt("plateT", 1);
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

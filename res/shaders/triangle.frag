@@ -6,7 +6,8 @@ in vec2 TexCoord;
 out vec4 rCol;
 
 uniform sampler2D brickT;
+uniform sampler2D plateT;
 
 void main() {
-  rCol = texture(brickT, TexCoord);
+  rCol = mix(texture(brickT, TexCoord), texture(plateT, TexCoord), 0.2);
 }
