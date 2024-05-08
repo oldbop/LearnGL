@@ -16,6 +16,7 @@ endif()
 
 add_subdirectory(deps/glfw/)
 add_subdirectory(deps/stb/)
+add_subdirectory(deps/glm/)
 
 file(GLOB SOURCES CONFIGURE_DEPENDS
   ${PROJECT_SOURCE_DIR}/src/*.hpp
@@ -37,3 +38,4 @@ endif()
 
 target_link_libraries(${CMAKE_PROJECT_NAME} glfw)
 target_link_libraries(${CMAKE_PROJECT_NAME} stb)
+target_link_libraries(${CMAKE_PROJECT_NAME} glm)
