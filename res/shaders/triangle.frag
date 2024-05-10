@@ -9,5 +9,5 @@ uniform sampler2D brickT;
 uniform sampler2D plateT;
 
 void main() {
-  rCol = mix(texture(brickT, TexCoord), texture(plateT, TexCoord), 0.2);
+  rCol = texture(brickT, TexCoord);
 }

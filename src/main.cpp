@@ -1,7 +1,12 @@
 #include "ShaderProgram.hpp"
 
+#include <cmath>
 #include <iostream>
 #include <string>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <stb/stb_image.h>
 
@@ -195,6 +200,14 @@ int main(int argc, const char **argv) {
   while(!(glfwWindowShouldClose(win))) {
 
     process_input(win);
+
+    glm::mat4 M(1.0f);
+    
+    M = glm::rotate(M, glm::radians((float) glfwGetTime() * 100),
+      glm::vec3(0.0f, 0.0f, 1.0f));
+
+    glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "M"), 1, GL_FALSE,
+      glm::value_ptr(M));
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);

@@ -7,8 +7,10 @@ layout(location = 2) in vec2 aTexCoord;
 out vec3 Col;
 out vec2 TexCoord;
 
+uniform mat4 M;
+
 void main() {
-  gl_Position = vec4(aPos, 1.0);
+  gl_Position = M * vec4(aPos, 1.0);
   Col = aCol;
   TexCoord = aTexCoord;
 }
