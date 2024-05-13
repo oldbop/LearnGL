@@ -55,7 +55,7 @@ int main(int argc, const char **argv) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(),
-    nullptr, nullptr);
+                                     nullptr, nullptr);
 
   if(!(win)) {
     std::cout << "GLFW: failed to create window" << std::endl;
@@ -108,23 +108,23 @@ int main(int argc, const char **argv) {
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-    GL_STATIC_DRAW);
+               GL_STATIC_DRAW);
 
   // Setting and enabling the position vertex attribute.
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-    (void *) 0);
+                        (void *) 0);
   
   glEnableVertexAttribArray(0);
 
   // Setting and enabling the color vertex attribute.
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-    (void *) (3 * sizeof(float)));
+                        (void *) (3 * sizeof(float)));
 
   glEnableVertexAttribArray(1);
 
   // Setting and enabling the texture coordinate vertex attribute.
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-    (void *) (6 * sizeof(float)));
+                        (void *) (6 * sizeof(float)));
 
   glEnableVertexAttribArray(2);
 
@@ -140,12 +140,12 @@ int main(int argc, const char **argv) {
   int brickW, brickH, brickChs;
 
   unsigned char *brickData = stbi_load("../res/textures/brick16.png", &brickW,
-    &brickH, &brickChs, 0);
+                                       &brickH, &brickChs, 0);
 
   if(brickData) {
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, brickW, brickH, 0, GL_RGB,
-      GL_UNSIGNED_BYTE, brickData);
+                 GL_UNSIGNED_BYTE, brickData);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -167,12 +167,12 @@ int main(int argc, const char **argv) {
   int plateW, plateH, plateChs;
 
   unsigned char *plateData = stbi_load("../res/textures/plate16.png", &plateW,
-    &plateH, &plateChs, 0);
+                                       &plateH, &plateChs, 0);
 
   if(plateData) {
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, plateW, plateH, 0, GL_RGB,
-      GL_UNSIGNED_BYTE, plateData);
+                 GL_UNSIGNED_BYTE, plateData);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -204,10 +204,10 @@ int main(int argc, const char **argv) {
     glm::mat4 M(1.0f);
     
     M = glm::rotate(M, glm::radians((float) glfwGetTime() * 100),
-      glm::vec3(0.0f, 0.0f, 1.0f));
+                    glm::vec3(0.0f, 0.0f, 1.0f));
 
     glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "M"), 1, GL_FALSE,
-      glm::value_ptr(M));
+                       glm::value_ptr(M));
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);

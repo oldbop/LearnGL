@@ -43,8 +43,8 @@ void ShaderProgram::CompileShader(unsigned int type, const std::string &path) {
   if(result == GL_FALSE) {
 
     std::cout << "Shader compilation at " << path << " failed.\n"
-      << "Compilation error:\n"
-      << std::endl;
+              << "Compilation error:\n"
+              << std::endl;
 
     glGetShaderInfoLog(id, 512, nullptr, msg);
     std::cout << msg << std::endl;
@@ -73,8 +73,8 @@ void ShaderProgram::CreateProgram() {
   if(result == GL_FALSE) {
 
     std::cout << "Program linking failed.\n"
-      << "Linking error:\n"
-      << std::endl;
+              << "Linking error:\n"
+              << std::endl;
 
     glGetProgramInfoLog(m_ID, 512, nullptr, msg);
     std::cout << msg << std::endl;
