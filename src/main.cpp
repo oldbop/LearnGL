@@ -28,13 +28,19 @@ inline void loadGL() {
 }
 #endif
 
-const int WIDTH = 600;
-const int HEIGHT = 600;
-const float RATIO = WIDTH / (float) HEIGHT;
+typedef struct {
+  float x, y;
+} Dimensions;
+
 const std::string TITLE = "LearnGL";
+Dimensions screen = { 600.0f, 600.0f };
 
 void frame_callback(GLFWwindow *win, int width, int height) {
+
   glViewport(0, 0, width, height);
+
+  screen.x = width;
+  screen.y = height;
 }
 
 void process_input(GLFWwindow *win) {
@@ -54,7 +60,7 @@ int main(int argc, const char **argv) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow *win = glfwCreateWindow(WIDTH, HEIGHT, TITLE.c_str(),
+  GLFWwindow *win = glfwCreateWindow(screen.x, screen.y, TITLE.c_str(),
                                      nullptr, nullptr);
 
   if(!(win)) {
@@ -68,7 +74,7 @@ int main(int argc, const char **argv) {
 
   loadGL();
 
-  glViewport(0, 0, WIDTH, HEIGHT);
+  glViewport(0, 0, screen.x, screen.y);
   glfwSetFramebufferSizeCallback(win, frame_callback);
 
   stbi_set_flip_vertically_on_load(true);
@@ -155,33 +161,6 @@ int main(int argc, const char **argv) {
 
   stbi_image_free(brickData);
 
-  // Plate texture
-  unsigned int plateT;
-  glGenTextures(1, &plateT);
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, plateT);
-  
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  int plateW, plateH, plateChs;
-
-  unsigned char *plateData = stbi_load("../res/textures/plate16.png", &plateW,
-                                       &plateH, &plateChs, 0);
-
-  if(plateData) {
-    
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, plateW, plateH, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, plateData);
-
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-  } else {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-
-  stbi_image_free(plateData);
-
   // The ShaderPorgram class is instantiated, shaders are compiled, and 
   // the program is created and used.
   ShaderProgram sh1;
@@ -192,22 +171,34 @@ int main(int argc, const char **argv) {
   sh1.Use();
 
   sh1.SetInt("brickT", 0);
-  sh1.SetInt("plateT", 1);
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  
+  // Model matrix
+  glm::mat4 M = glm::mat4(1.0f);
+  M = glm::rotate(M, glm::radians(-60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+  glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
+                                          glm::value_ptr(M));
+
+  // View matrix
+  glm::mat4 V = glm::mat4(1.0f);
+  V = glm::translate(V, glm::vec3(0.0f, 0.0f, -5.0f));
+  
+  glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
+                                          glm::value_ptr(V));
+
+  // Projection matrix
+  glm::mat4 P = glm::mat4(1.0f);
+  P = glm::perspective(glm::radians(45.0f), screen.x / screen.y, 0.1f, 100.0f);
+  
+  glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
+                                          glm::value_ptr(P));
 
   while(!(glfwWindowShouldClose(win))) {
 
     process_input(win);
-
-    glm::mat4 M(1.0f);
-    
-    M = glm::rotate(M, glm::radians((float) glfwGetTime() * 100),
-                    glm::vec3(0.0f, 0.0f, 1.0f));
-
-    glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "M"), 1, GL_FALSE,
-                       glm::value_ptr(M));
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
