@@ -81,18 +81,48 @@ int main(int argc, const char **argv) {
 
   // Vertex data
   float vertices[] = {
-    // Positions          // Colours          // Texture Coords
-    -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-    -0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f,
-     0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-     0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f
-  };
+    // Positions           // Texture Coords
+    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
+    -0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
+    -0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
 
-  // This data is used by the Element Buffer Object. It specifies how to draw
-  // a square using two triangles while reusing some vertices.
-  unsigned int indices[] = {
-    0, 1, 2,
-    1, 2, 3
+     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
+
+    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   4.0f, 4.0f,
+
+    -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
+
+    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 4.0f,
+     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 4.0f,
+     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   4.0f, 4.0f,
+
+    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f, -0.5f,  0.5f,   4.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
+     0.5f, -0.5f,  0.5f,   4.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
   };
 
   // A Vertex Array Object is created and bound. All of the VBO's and EBO's
@@ -108,31 +138,17 @@ int main(int argc, const char **argv) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  // A Element Buffer Object is created on the GPU to contain the indices of
-  // the vertices used to draw a shape.
-  unsigned int ebo;
-  glGenBuffers(1, &ebo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-               GL_STATIC_DRAW);
-
   // Setting and enabling the position vertex attribute.
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *) 0);
   
   glEnableVertexAttribArray(0);
 
-  // Setting and enabling the color vertex attribute.
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+  // Setting and enabling the texture coordinate vertex attribute.
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *) (3 * sizeof(float)));
 
   glEnableVertexAttribArray(1);
-
-  // Setting and enabling the texture coordinate vertex attribute.
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                        (void *) (6 * sizeof(float)));
-
-  glEnableVertexAttribArray(2);
 
   // Brick texture
   unsigned int brickT;
@@ -142,6 +158,9 @@ int main(int argc, const char **argv) {
   
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   int brickW, brickH, brickChs;
 
@@ -175,16 +194,18 @@ int main(int argc, const char **argv) {
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   
+  /*
   // Model matrix
   glm::mat4 M = glm::mat4(1.0f);
-  M = glm::rotate(M, glm::radians(-60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  M = glm::rotate(M, glm::radians(-60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                           glm::value_ptr(M));
-
+  */
+ 
   // View matrix
   glm::mat4 V = glm::mat4(1.0f);
-  V = glm::translate(V, glm::vec3(0.0f, 0.0f, -5.0f));
+  V = glm::translate(V, glm::vec3(0.0f, 0.0f, -3.0f));
   
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
                                           glm::value_ptr(V));
@@ -196,14 +217,24 @@ int main(int argc, const char **argv) {
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
                                           glm::value_ptr(P));
 
+  glEnable(GL_DEPTH_TEST);
+
   while(!(glfwWindowShouldClose(win))) {
 
     process_input(win);
 
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glm::mat4 M = glm::mat4(1.0f);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    M = glm::rotate(M, glm::radians((float) glfwGetTime() * 50),
+                    glm::vec3(0.5f, 1.0f, 0.0f));
+
+    glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
+                                            glm::value_ptr(M));
+    
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glfwSwapBuffers(win);
     glfwPollEvents();
