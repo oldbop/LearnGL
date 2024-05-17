@@ -83,46 +83,46 @@ int main(int argc, const char **argv) {
   float vertices[] = {
     // Positions           // Texture Coords
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
-    -0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
-    -0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
 
+     0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
      0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
 
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,   4.0f, 4.0f,
+     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 1.0f,
 
+     0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f,  0.5f, -0.5f,   4.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
 
+     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 4.0f,
-     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 4.0f,
-     0.5f, -0.5f, -0.5f,   4.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   4.0f, 4.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
 
     -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f, -0.5f,  0.5f,   4.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 4.0f,
-     0.5f, -0.5f,  0.5f,   4.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   4.0f, 4.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
   };
 
   // A Vertex Array Object is created and bound. All of the VBO's and EBO's
@@ -164,7 +164,7 @@ int main(int argc, const char **argv) {
 
   int brickW, brickH, brickChs;
 
-  unsigned char *brickData = stbi_load("../res/textures/brick16.png", &brickW,
+  unsigned char *brickData = stbi_load("../res/textures/arrow16.png", &brickW,
                                        &brickH, &brickChs, 0);
 
   if(brickData) {
@@ -193,16 +193,16 @@ int main(int argc, const char **argv) {
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  
+
   /*
   // Model matrix
   glm::mat4 M = glm::mat4(1.0f);
-  M = glm::rotate(M, glm::radians(-60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  M = glm::rotate(M, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                           glm::value_ptr(M));
   */
- 
+  
   // View matrix
   glm::mat4 V = glm::mat4(1.0f);
   V = glm::translate(V, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -223,15 +223,14 @@ int main(int argc, const char **argv) {
 
     process_input(win);
 
-    glm::mat4 M = glm::mat4(1.0f);
+    float time = (float) glfwGetTime();
 
-    M = glm::rotate(M, glm::radians((float) glfwGetTime() * 50),
-                    glm::vec3(0.5f, 1.0f, 0.0f));
+    glm::mat4 M = glm::mat4(1.0f);
+    M = glm::rotate(M, glm::radians(time * 50), glm::vec3(0.5f, 1.0f, 0.0f));
 
     glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                             glm::value_ptr(M));
-    
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
