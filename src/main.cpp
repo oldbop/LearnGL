@@ -85,20 +85,14 @@ int main(int argc, const char **argv) {
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
     -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
     -0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
 
      0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
      0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
      0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
      0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
 
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
      0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
     -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
      0.5f, -0.5f,  0.5f,   1.0f, 1.0f,
@@ -106,13 +100,9 @@ int main(int argc, const char **argv) {
      0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,
      0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
     -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
 
      0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
      0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
     -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
@@ -120,9 +110,16 @@ int main(int argc, const char **argv) {
     -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
      0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
      0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+  };
+
+  unsigned int indices[] = {
+     0,  1,  2,  1,  2,  3,
+     4,  5,  6,  5,  6,  7,
+     8,  9, 10,  9, 10, 11,
+    12, 13, 14, 13, 14, 15,
+    16, 17, 18, 17, 18, 19,
+    20, 21, 22, 21, 22, 23
   };
 
   // A Vertex Array Object is created and bound. All of the VBO's and EBO's
@@ -137,6 +134,14 @@ int main(int argc, const char **argv) {
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  // A Element Buffer Object is created on the GPU to contain the indices of
+  // the vertices used to draw a shape.
+  unsigned int ebo;
+  glGenBuffers(1, &ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+               GL_STATIC_DRAW);
 
   // Setting and enabling the position vertex attribute.
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
@@ -192,16 +197,14 @@ int main(int argc, const char **argv) {
   sh1.SetInt("brickT", 0);
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  /*
   // Model matrix
   glm::mat4 M = glm::mat4(1.0f);
   M = glm::rotate(M, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                           glm::value_ptr(M));
-  */
   
   // View matrix
   glm::mat4 V = glm::mat4(1.0f);
@@ -223,6 +226,7 @@ int main(int argc, const char **argv) {
 
     process_input(win);
 
+    /*
     float time = (float) glfwGetTime();
 
     glm::mat4 M = glm::mat4(1.0f);
@@ -230,10 +234,12 @@ int main(int argc, const char **argv) {
 
     glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                             glm::value_ptr(M));
+    */
+    
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(win);
     glfwPollEvents();
