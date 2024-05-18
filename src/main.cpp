@@ -32,8 +32,8 @@ typedef struct {
   float x, y;
 } Dimensions;
 
-const std::string TITLE = "LearnGL";
 Dimensions screen = { 600.0f, 600.0f };
+const std::string TITLE = "LearnGL";
 
 void frame_callback(GLFWwindow *win, int width, int height) {
 
@@ -79,38 +79,38 @@ int main(int argc, const char **argv) {
 
   stbi_set_flip_vertically_on_load(true);
 
-  // Vertex data
+  // Vertex data: some are redundant with only one texture
   float vertices[] = {
     // Positions           // Texture Coords
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
     -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
 
-     0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,   1.0f, 1.0f,
-
-     0.5f,  0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-
-     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
      0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+
+    -0.5f, -0.5f, -0.5f,   1.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+
     -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
 
     -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
     -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f
   };
 
   unsigned int indices[] = {
@@ -169,7 +169,7 @@ int main(int argc, const char **argv) {
 
   int brickW, brickH, brickChs;
 
-  unsigned char *brickData = stbi_load("../res/textures/arrow16.png", &brickW,
+  unsigned char *brickData = stbi_load("../res/textures/plate16.png", &brickW,
                                        &brickH, &brickChs, 0);
 
   if(brickData) {
@@ -197,14 +197,16 @@ int main(int argc, const char **argv) {
   sh1.SetInt("brickT", 0);
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  
+  /*
   // Model matrix
   glm::mat4 M = glm::mat4(1.0f);
   M = glm::rotate(M, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                           glm::value_ptr(M));
+  */
   
   // View matrix
   glm::mat4 V = glm::mat4(1.0f);
@@ -226,7 +228,6 @@ int main(int argc, const char **argv) {
 
     process_input(win);
 
-    /*
     float time = (float) glfwGetTime();
 
     glm::mat4 M = glm::mat4(1.0f);
@@ -234,9 +235,8 @@ int main(int argc, const char **argv) {
 
     glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                             glm::value_ptr(M));
-    */
     
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
