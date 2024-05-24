@@ -33,7 +33,7 @@ typedef struct {
   float x, y;
 } Dimensions;
 
-Dimensions screen = { 600.0f, 600.0f };
+Dimensions screen = { 1000.0f, 700.0f };
 const std::string TITLE = "LearnGL";
 
 void frame_callback(GLFWwindow *win, int width, int height) {
@@ -223,10 +223,11 @@ int main(int argc, const char **argv) {
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
                                           glm::value_ptr(P));
 
-  std::array<glm::vec3, 3> pos = {
-    glm::vec3(0.0f, 0.5f, 0.0f),
-    glm::vec3(0.2f, -0.2f, 1.5f),
-    glm::vec3(-0.75f, -0.75f, -2.0f)
+  std::array<glm::vec3, 4> pos = {
+    glm::vec3(-0.5f, -0.5f, 0.0f),
+    glm::vec3(-0.5f,  0.5f, 0.0f),
+    glm::vec3( 0.5f, -0.5f, 0.0f),
+    glm::vec3( 0.5f,  0.5f, 0.0f)
   };
 
   glEnable(GL_DEPTH_TEST);
