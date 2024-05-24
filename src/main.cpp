@@ -1,5 +1,6 @@
 #include "ShaderProgram.hpp"
 
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -82,35 +83,35 @@ int main(int argc, const char **argv) {
   // Vertex data: some are redundant with only one texture
   float vertices[] = {
     // Positions           // Texture Coords
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+    -0.2f, -0.2f, -0.2f,   0.0f, 0.0f,
+    -0.2f, -0.2f,  0.2f,   1.0f, 0.0f,
+    -0.2f,  0.2f, -0.2f,   0.0f, 1.0f,
+    -0.2f,  0.2f,  0.2f,   1.0f, 1.0f,
 
-     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+     0.2f, -0.2f, -0.2f,   1.0f, 0.0f,
+     0.2f, -0.2f,  0.2f,   0.0f, 0.0f,
+     0.2f,  0.2f, -0.2f,   1.0f, 1.0f,
+     0.2f,  0.2f,  0.2f,   0.0f, 1.0f,
 
-    -0.5f, -0.5f, -0.5f,   1.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,   0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+    -0.2f, -0.2f, -0.2f,   1.0f, 1.0f,
+    -0.2f, -0.2f,  0.2f,   1.0f, 0.0f,
+     0.2f, -0.2f, -0.2f,   0.0f, 1.0f,
+     0.2f, -0.2f,  0.2f,   0.0f, 0.0f,
 
-    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
+    -0.2f,  0.2f, -0.2f,   1.0f, 1.0f,
+    -0.2f,  0.2f,  0.2f,   1.0f, 0.0f,
+     0.2f,  0.2f, -0.2f,   0.0f, 1.0f,
+     0.2f,  0.2f,  0.2f,   0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+    -0.2f, -0.2f, -0.2f,   1.0f, 0.0f,
+    -0.2f,  0.2f, -0.2f,   1.0f, 1.0f,
+     0.2f, -0.2f, -0.2f,   0.0f, 0.0f,
+     0.2f,  0.2f, -0.2f,   0.0f, 1.0f,
 
-    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f
+    -0.2f, -0.2f,  0.2f,   0.0f, 0.0f,
+    -0.2f,  0.2f,  0.2f,   0.0f, 1.0f,
+     0.2f, -0.2f,  0.2f,   1.0f, 0.0f,
+     0.2f,  0.2f,  0.2f,   1.0f, 1.0f
   };
 
   unsigned int indices[] = {
@@ -222,6 +223,12 @@ int main(int argc, const char **argv) {
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
                                           glm::value_ptr(P));
 
+  std::array<glm::vec3, 3> pos = {
+    glm::vec3(0.0f, 0.5f, 0.0f),
+    glm::vec3(0.2f, -0.2f, 1.5f),
+    glm::vec3(-0.75f, -0.75f, -2.0f)
+  };
+
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
@@ -231,16 +238,20 @@ int main(int argc, const char **argv) {
 
     float time = (float) glfwGetTime();
 
-    glm::mat4 M = glm::mat4(1.0f);
-    M = glm::rotate(M, glm::radians(time * 50), glm::vec3(0.5f, 1.0f, 0.0f));
-
-    glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
-                                            glm::value_ptr(M));
-    
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    for(const auto &v : pos) {
+
+      glm::mat4 M = glm::mat4(1.0f);
+      M = glm::translate(M, v);
+      M = glm::rotate(M, glm::radians(time * 50), glm::vec3(0.5f, 1.0f, 0.0f));
+
+      glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1,
+                         GL_FALSE, glm::value_ptr(M));
+
+      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    }
 
     glfwSwapBuffers(win);
     glfwPollEvents();
