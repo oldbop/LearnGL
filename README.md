@@ -1,6 +1,6 @@
 # LearnGL
 
-Another project to track my learning of OpenGL.
+A project to track my learning of OpenGL.
 
 ### Configure ➡️  Build ➡️  Run
 

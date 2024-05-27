@@ -1,9 +1,10 @@
 #include "ShaderProgram.hpp"
 
-#include <array>
-#include <cmath>
+#include <ctime>
+#include <cstdlib>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -216,6 +217,11 @@ int main(int argc, const char **argv) {
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
                                           glm::value_ptr(V));
 
+  // Camera
+  glm::vec3 camPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+  glm::vec3 camTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+  glm::vec3 camDirection = glm::normalize(camPosition - camTarget);
+
   // Projection matrix
   glm::mat4 P = glm::mat4(1.0f);
   P = glm::perspective(glm::radians(45.0f), screen.x / screen.y, 0.1f, 100.0f);
@@ -223,12 +229,19 @@ int main(int argc, const char **argv) {
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
                                           glm::value_ptr(P));
 
-  std::array<glm::vec3, 4> pos = {
-    glm::vec3(-0.5f, -0.5f, 0.0f),
-    glm::vec3(-0.5f,  0.5f, 0.0f),
-    glm::vec3( 0.5f, -0.5f, 0.0f),
-    glm::vec3( 0.5f,  0.5f, 0.0f)
-  };
+  int nCubes = 5;
+  srand(time(0));
+
+  std::vector<glm::vec3> pos;
+
+  for(int i = 0; i < nCubes; ++i) {
+
+    float u = (((float) rand()) / (((float) RAND_MAX) / 2.0f)) - 1.0f;
+    float v = (((float) rand()) / (((float) RAND_MAX) / 2.0f)) - 1.0f;
+    float w = (((float) rand()) / (((float) RAND_MAX) / 2.0f)) - 1.0f;
+
+    pos.push_back(glm::vec3(u, v, w));
+  }
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -246,7 +259,7 @@ int main(int argc, const char **argv) {
 
       glm::mat4 M = glm::mat4(1.0f);
       M = glm::translate(M, v);
-      M = glm::rotate(M, glm::radians(time * 50), glm::vec3(0.5f, 1.0f, 0.0f));
+      M = glm::rotate(M, glm::radians(time * 100), glm::vec3(0.5f, 1.0f, 0.0f));
 
       glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1,
                          GL_FALSE, glm::value_ptr(M));
