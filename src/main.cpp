@@ -209,18 +209,15 @@ int main(int argc, const char **argv) {
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
                                           glm::value_ptr(M));
   */
-  
+
+  /*
   // View matrix
   glm::mat4 V = glm::mat4(1.0f);
   V = glm::translate(V, glm::vec3(0.0f, 0.0f, -3.0f));
   
   glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
                                           glm::value_ptr(V));
-
-  // Camera
-  glm::vec3 camPosition = glm::vec3(0.0f, 0.0f, 3.0f);
-  glm::vec3 camTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-  glm::vec3 camDirection = glm::normalize(camPosition - camTarget);
+  */
 
   // Projection matrix
   glm::mat4 P = glm::mat4(1.0f);
@@ -254,6 +251,17 @@ int main(int argc, const char **argv) {
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    const float radius = 10.0f;
+    float camX = sin(time * radius);
+    float camZ = cos(time * radius);
+
+    glm::mat4 V = glm::lookAt(glm::vec3(camX, 0.0f, camZ),
+                              glm::vec3(0.0f, 0.0f, 0.0f),
+                              glm::vec3(0.0f, 1.0f, 0.0f));
+
+    glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
+                                            glm::value_ptr(V));
 
     for(const auto &v : pos) {
 
