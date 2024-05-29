@@ -34,8 +34,14 @@ typedef struct {
   float x, y;
 } Dimensions;
 
-Dimensions screen = { 1000.0f, 700.0f };
 const std::string TITLE = "LearnGL";
+const float camSpeed = 0.2f;
+
+Dimensions screen = { 1000.0f, 700.0f };
+
+glm::vec3 camPos   = glm::vec3(0.0f, 0.0f,  5.0f);
+glm::vec3 camFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
 void frame_callback(GLFWwindow *win, int width, int height) {
 
@@ -46,8 +52,25 @@ void frame_callback(GLFWwindow *win, int width, int height) {
 }
 
 void process_input(GLFWwindow *win) {
+
   if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(win, true);
+  }
+
+  if(glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS) {
+    camPos += camSpeed * camFront;
+  }
+
+  if(glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS) {
+    camPos -= camSpeed * camFront;
+  }
+
+  if(glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS) {
+    camPos += glm::normalize(glm::cross(camFront, camUp)) * camSpeed;
+  }
+
+  if(glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS) {
+    camPos -= glm::normalize(glm::cross(camFront, camUp)) * camSpeed;
   }
 }
 
@@ -200,24 +223,6 @@ int main(int argc, const char **argv) {
 
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  
-  /*
-  // Model matrix
-  glm::mat4 M = glm::mat4(1.0f);
-  M = glm::rotate(M, glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-  glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Model"), 1, GL_FALSE,
-                                          glm::value_ptr(M));
-  */
-
-  /*
-  // View matrix
-  glm::mat4 V = glm::mat4(1.0f);
-  V = glm::translate(V, glm::vec3(0.0f, 0.0f, -3.0f));
-  
-  glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
-                                          glm::value_ptr(V));
-  */
 
   // Projection matrix
   glm::mat4 P = glm::mat4(1.0f);
@@ -252,13 +257,7 @@ int main(int argc, const char **argv) {
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const float radius = 10.0f;
-    float camX = sin(time * radius);
-    float camZ = cos(time * radius);
-
-    glm::mat4 V = glm::lookAt(glm::vec3(camX, 0.0f, camZ),
-                              glm::vec3(0.0f, 0.0f, 0.0f),
-                              glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 V = glm::lookAt(camPos, camPos + camFront, camUp);
 
     glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
                                             glm::value_ptr(V));
