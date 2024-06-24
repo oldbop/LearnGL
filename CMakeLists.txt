@@ -38,4 +38,4 @@ endif()
 
 target_link_libraries(${CMAKE_PROJECT_NAME} glfw)
 target_link_libraries(${CMAKE_PROJECT_NAME} stb)
-target_link_libraries(${CMAKE_PROJECT_NAME} glm)
+target_link_libraries(${CMAKE_PROJECT_NAME} glm::glm)
