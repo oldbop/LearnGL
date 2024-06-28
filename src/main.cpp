@@ -51,6 +51,7 @@ float lastY = screen.y / 2;
 
 float yaw   = -90.0f;
 float pitch =   0.0f;
+float fov   =  45.0f;
 
 float     camSpeed = 8.0f;
 glm::vec3 camPos   = glm::vec3(0.0f, 0.0f,  5.0f);
@@ -79,9 +80,7 @@ void mouse_callback(GLFWwindow *win, double xpos, double ypos) {
 
   if(pitch > 89.0f) {
     pitch = 89.0f;
-  }
-
-  if(pitch < -89.0f) {
+  } else if(pitch < -89.0f) {
     pitch = -89.0f;
   }
 
@@ -92,6 +91,17 @@ void mouse_callback(GLFWwindow *win, double xpos, double ypos) {
   );
 
   camFront = glm::normalize(direction);
+}
+
+void scroll_callback(GLFWwindow *win, double xoff, double yoff) {
+
+  fov -= yoff;
+
+  if(fov < 1.0f) {
+    fov = 1.0f;
+  } else if(fov > 45.0f) {
+    fov = 45.0f;
+  }
 }
 
 void frame_resize_callback(GLFWwindow *win, int width, int height) {
@@ -160,6 +170,8 @@ int main(int argc, const char **argv) {
 
   glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetCursorPosCallback(win, mouse_callback);
+
+  glfwSetScrollCallback(win, scroll_callback);
 
   stbi_set_flip_vertically_on_load(true);
 
@@ -283,13 +295,6 @@ int main(int argc, const char **argv) {
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  // Projection matrix
-  glm::mat4 P = glm::mat4(1.0f);
-  P = glm::perspective(glm::radians(45.0f), screen.x / screen.y, 0.1f, 100.0f);
-  
-  glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
-                                          glm::value_ptr(P));
-
   int nCubes = 5;
   srand(time(0));
 
@@ -316,13 +321,22 @@ int main(int argc, const char **argv) {
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // View matrix
     glm::mat4 V = glm::lookAt(camPos, camPos + camFront, camUp);
 
     glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "View"), 1, GL_FALSE,
                                             glm::value_ptr(V));
 
+    // Perspective matrix
+    glm::mat4 P = glm::mat4(1.0f);
+    P = glm::perspective(glm::radians(fov), screen.x / screen.y, 0.1f, 100.0f);
+
+    glUniformMatrix4fv(glGetUniformLocation(sh1.GetID(), "Proj"), 1, GL_FALSE,
+                                            glm::value_ptr(P));
+
     for(const auto &v : pos) {
 
+      // Model matrix
       glm::mat4 M = glm::mat4(1.0f);
       M = glm::translate(M, v);
       M = glm::rotate(M, glm::radians(time * 100), glm::vec3(0.5f, 1.0f, 0.0f));
