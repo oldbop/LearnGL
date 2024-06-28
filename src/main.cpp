@@ -1,5 +1,6 @@
 #include "ShaderProgram.hpp"
 
+#include <cmath>
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
@@ -7,8 +8,9 @@
 #include <vector>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 
 #include <stb/stb_image.h>
 
@@ -35,15 +37,64 @@ typedef struct {
 } Dimensions;
 
 const std::string TITLE = "LearnGL";
-const float camSpeed = 0.2f;
 
 Dimensions screen = { 1000.0f, 700.0f };
 
+bool fMouse = true;
+
+float sensitivity = 0.1f;
+float deltaTime   = 0.0f;
+float lastFrame   = 0.0f;
+
+float lastX = screen.x / 2;
+float lastY = screen.y / 2;
+
+float yaw   = -90.0f;
+float pitch =   0.0f;
+
+float     camSpeed = 8.0f;
 glm::vec3 camPos   = glm::vec3(0.0f, 0.0f,  5.0f);
 glm::vec3 camFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 camUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
-void frame_callback(GLFWwindow *win, int width, int height) {
+void mouse_callback(GLFWwindow *win, double xpos, double ypos) {
+
+  if(fMouse) {
+    lastX  = xpos;
+    lastY  = ypos;
+    fMouse = false;
+  }
+
+  float xoff = xpos - lastX;
+  float yoff = lastY - ypos;
+
+  lastX = xpos;
+  lastY = ypos;
+
+  xoff *= sensitivity;
+  yoff *= sensitivity;
+
+  yaw   += xoff;
+  pitch += yoff;
+
+  if(pitch > 89.0f) {
+    pitch = 89.0f;
+  }
+
+  if(pitch < -89.0f) {
+    pitch = -89.0f;
+  }
+
+  glm::vec3 direction = glm::vec3(
+    cos(glm::radians(pitch)) * cos(glm::radians(yaw)),
+    sin(glm::radians(pitch)),
+    cos(glm::radians(pitch)) * sin(glm::radians(yaw))
+  );
+
+  camFront = glm::normalize(direction);
+}
+
+void frame_resize_callback(GLFWwindow *win, int width, int height) {
 
   glViewport(0, 0, width, height);
 
@@ -51,26 +102,31 @@ void frame_callback(GLFWwindow *win, int width, int height) {
   screen.y = height;
 }
 
-void process_input(GLFWwindow *win) {
+void process_input(GLFWwindow *win, float time) {
+    
+  deltaTime = time - lastFrame;
+  lastFrame = time;
+
+  float camSpeedS = camSpeed * deltaTime;
 
   if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(win, true);
   }
 
   if(glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS) {
-    camPos += camSpeed * camFront;
+    camPos += camSpeedS * camFront;
   }
 
   if(glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS) {
-    camPos -= camSpeed * camFront;
+    camPos -= camSpeedS * camFront;
   }
 
   if(glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS) {
-    camPos += glm::normalize(glm::cross(camFront, camUp)) * camSpeed;
+    camPos += glm::normalize(glm::cross(camFront, camUp)) * camSpeedS;
   }
 
   if(glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS) {
-    camPos -= glm::normalize(glm::cross(camFront, camUp)) * camSpeed;
+    camPos -= glm::normalize(glm::cross(camFront, camUp)) * camSpeedS;
   }
 }
 
@@ -100,7 +156,10 @@ int main(int argc, const char **argv) {
   loadGL();
 
   glViewport(0, 0, screen.x, screen.y);
-  glfwSetFramebufferSizeCallback(win, frame_callback);
+  glfwSetFramebufferSizeCallback(win, frame_resize_callback);
+
+  glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetCursorPosCallback(win, mouse_callback);
 
   stbi_set_flip_vertically_on_load(true);
 
@@ -250,9 +309,9 @@ int main(int argc, const char **argv) {
 
   while(!(glfwWindowShouldClose(win))) {
 
-    process_input(win);
-
     float time = (float) glfwGetTime();
+
+    process_input(win, time);
 
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
