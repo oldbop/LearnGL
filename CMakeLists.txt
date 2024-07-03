@@ -29,6 +29,11 @@ set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
   DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
 )
 
+target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC
+  $<$<COMPILE_LANG_AND_ID:C,Clang>:-std=c89;-Wall;-pedantic>
+  $<$<COMPILE_LANG_AND_ID:CXX,Clang>:-Wall>
+)
+
 if(SYS_GL_HEADERS)
   target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC SYS_GL_HEADERS)
   target_link_libraries(${CMAKE_PROJECT_NAME} OpenGL::GL)
