@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <ctime>
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -104,7 +105,7 @@ void scroll_callback(GLFWwindow *win, double xoff, double yoff) {
   }
 }
 
-void frame_resize_callback(GLFWwindow *win, int width, int height) {
+void frame_resize_callback(GLFWwindow *win, int32_t width, int32_t height) {
 
   glViewport(0, 0, width, height);
 
@@ -209,7 +210,7 @@ int main(int argc, const char **argv) {
      0.2f,  0.2f,  0.2f,   1.0f, 1.0f
   };
 
-  unsigned int indices[] = {
+  uint32_t indices[] = {
      0,  1,  3,  3,  2,  0,
      4,  6,  7,  7,  5,  4,
      8, 10, 11, 11,  9,  8,
@@ -220,20 +221,20 @@ int main(int argc, const char **argv) {
 
   // A Vertex Array Object is created and bound. All of the VBO's and EBO's
   // that are bound after this are associated with this object.
-  unsigned int vao;
+  uint32_t vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
   // A Vertex Buffer Object is created on the GPU, then our vertex 
   // data is sent to it
-  unsigned int vbo;
+  uint32_t vbo;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   // A Element Buffer Object is created on the GPU to contain the indices of
   // the vertices used to draw a shape.
-  unsigned int ebo;
+  uint32_t ebo;
   glGenBuffers(1, &ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
@@ -252,7 +253,7 @@ int main(int argc, const char **argv) {
   glEnableVertexAttribArray(1);
 
   // Brick texture
-  unsigned int brickT;
+  uint32_t brickT;
   glGenTextures(1, &brickT);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, brickT);
@@ -263,7 +264,7 @@ int main(int argc, const char **argv) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  int brickW, brickH, brickChs;
+  int32_t brickW, brickH, brickChs;
 
   unsigned char *brickData = stbi_load("../res/textures/plate16.png", &brickW,
                                        &brickH, &brickChs, 0);
@@ -295,12 +296,12 @@ int main(int argc, const char **argv) {
   // Wireframe mode (disable with glPolygonMode(GL_FRONT_AND_BACK, GL_FILL))
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  int nCubes = 5;
+  uint32_t nCubes = 5;
   srand(time(0));
 
   std::vector<glm::vec3> pos;
 
-  for(int i = 0; i < nCubes; ++i) {
+  for(uint32_t i = 0; i < nCubes; ++i) {
 
     float u = (((float) rand()) / (((float) RAND_MAX) / 2.0f)) - 1.0f;
     float v = (((float) rand()) / (((float) RAND_MAX) / 2.0f)) - 1.0f;

@@ -1,5 +1,6 @@
 #include "ShaderProgram.hpp"
 
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -16,15 +17,15 @@
 
 #endif
 
-void ShaderProgram::CompileShader(unsigned int type, const std::string &path) {
+void ShaderProgram::CompileShader(uint32_t type, const std::string &path) {
 
   std::ifstream fileStream(path);
   std::string line, strSource;
   std::stringstream strStream;
   
-  unsigned int id;
+  uint32_t id;
   char msg[512];
-  int result;
+  int32_t result;
 
   while(std::getline(fileStream, line)) {
     strStream << line << '\n';
@@ -61,7 +62,7 @@ void ShaderProgram::CreateProgram() {
 
   m_ID = glCreateProgram();
   char msg[512];
-  int result;
+  int32_t result;
 
   for(const auto &shaderID : m_ShaderIDs) {
     glAttachShader(m_ID, shaderID);
@@ -93,7 +94,7 @@ void ShaderProgram::SetFloat(const std::string &name, float value) const {
   glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
-void ShaderProgram::SetInt(const std::string &name, int value) const {
+void ShaderProgram::SetInt(const std::string &name, int32_t value) const {
   glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
