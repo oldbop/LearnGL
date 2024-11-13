@@ -13,7 +13,7 @@ public:
   void SetBool(const std::string &name, bool value) const;
   void SetFloat(const std::string &name, float value) const;
   void SetInt(const std::string &name, int32_t value) const;
-  void Use();
+  void Use() const;
 private:
   uint32_t m_ID;
   std::vector<uint32_t> m_ShaderIDs;

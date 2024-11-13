@@ -36,8 +36,7 @@ bool GameApp::Init() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  m_pWindow = glfwCreateWindow(m_WindowWidth, m_WindowHeight,
-                               m_WindowTitle.c_str(), nullptr, nullptr);
+  m_pWindow = glfwCreateWindow(m_WindowWidth, m_WindowHeight, m_WindowTitle.c_str(), nullptr, nullptr);
 
   if (!m_pWindow) {
     std::cout << "GLFW: failed to create window" << std::endl;
